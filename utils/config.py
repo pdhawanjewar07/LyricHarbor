@@ -1,3 +1,3 @@
-lyrics_sources = ["lrclib", "musixmatch"]
-audio_formats = [".flac"] # .mp3, m4a, etc.
-music_directory = "C:\\Users\\Max\\Desktop\\music"
+lyrics_sources = ["lrclib", "musixmatch"] # order matters(by priority)
+AUDIO_EXTENSIONS = {".mp3", ".flac", ".wav", ".aac", ".m4a",".ogg", ".opus", ".alac", ".aiff"}
+music_directory = "C:\\Users\\Max\\Desktop\\music" # recursive or non recursive ?

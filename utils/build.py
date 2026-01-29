@@ -3,14 +3,14 @@ from mutagen import File
 
 TAGS_PRIORITY_ORDER = ["title", "album", "albumartist", "artist"]
 
-def search_query(song_path: str, tags_to_include: List[str] = None) -> str:
+def raw_search_query(song_path: str, tags_to_include: List[str] = None) -> str:
     """
     Build a search query string from selected audio tags.
 
     Args:
         song_path: Path to the audio file.
-        tags_to_include: List of tags to include in the query(order matters)
-            Defaults to ['title', 'artist']. Can also include 'album', 'albumartist'.
+        tags_to_include: Default ['title', 'album'] for search.
+            Additional options - 'artist', 'albumartist'.
 
     Returns:
         Formatted search query string.
@@ -18,22 +18,22 @@ def search_query(song_path: str, tags_to_include: List[str] = None) -> str:
 
     # set default tags to include
     if tags_to_include is None:
-        tags_to_include = ['title', 'artist']
+        tags_to_include = ['title', 'album']
     else:
         for i in range(len(tags_to_include)):
             tags_to_include[i] = tags_to_include[i].lower()
 
     audio = File(song_path)
 
-    query = ""
-    # add to query by priority
+    raw_query = ""
+    # add to raw_query by priority
     for tag in TAGS_PRIORITY_ORDER:
         if tag in tags_to_include:
             for key, value in audio.tags.items():
                 if key == tag:
-                    query += value[0] + " "
+                    raw_query += value[0] + " "
 
-    # print(query)
-    return query
+    # print(raw_query)
+    return raw_query
 
-# search_query(song_path="C:\\Users\\Max\\Desktop\\music\\Habib Faisal - Chokra Jawaan.flac", tags_to_include=['albUm', 'albumArtIst', 'Title', 'arTist'])
+raw_search_query(song_path="C:\\Users\\Max\\Desktop\\music\\Various Interprets - Ha Raham (Mehfuz).flac", tags_to_include=['albUm', 'albumArtIst', 'Title', 'arTist'])
