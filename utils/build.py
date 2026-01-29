@@ -33,8 +33,7 @@ def search_query(song_path: str, tags_to_include: List[str] = None) -> str:
                 if key == tag:
                     query += value[0] + " "
 
-    print(query)
+    # print(query)
+    return query
 
-    return None
-
-search_query(song_path="C:\\Users\\Max\\Desktop\\music\\Habib Faisal - Chokra Jawaan.flac", tags_to_include=['albUm', 'albumArtIst', 'Title', 'arTist'])
+# search_query(song_path="C:\\Users\\Max\\Desktop\\music\\Habib Faisal - Chokra Jawaan.flac", tags_to_include=['albUm', 'albumArtIst', 'Title', 'arTist'])
