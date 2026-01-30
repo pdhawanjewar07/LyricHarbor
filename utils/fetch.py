@@ -8,7 +8,7 @@ from urllib3.util.retry import Retry
 # Human-like timing
 def human_delay(min_s:float=9.0, max_s:float=15.0):
     sleep_time = random.uniform(min_s, max_s)
-    print(f"waiting - {sleep_time:.3f} seconds")
+    # print(f"waiting - {sleep_time:.3f} seconds")
     time.sleep(sleep_time)
 
 # One global session (safe)
@@ -72,14 +72,15 @@ def lyrics(search_query: str) -> list | None:
 
     data = response.json()
 
-    if not isinstance(data, list) or not data:
-        return None
+    # if not isinstance(data, list) or not data:
+    #     return None
 
     human_delay(6.0, 12.0)
 
     return data
 
 
+"""
 
 query_list = [
     "Chokra Jawaan Ishaqzaade Amit Trivedi Vishal Dadlani Sunidhi Chauhan Habib Faisal",
@@ -94,3 +95,4 @@ for index, query in enumerate(query_list):
     with open(f"response{index}.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+"""

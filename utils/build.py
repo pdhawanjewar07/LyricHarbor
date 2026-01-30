@@ -1,7 +1,7 @@
 from typing import List
 from mutagen import File
 
-TAGS_PRIORITY_ORDER = ["title", "album", "albumartist", "artist"]
+TAGS_PRIORITY_ORDER = ["title", "artist", "albumartist", "album"]
 
 def raw_search_query(song_path: str, tags_to_include: List[str] = None) -> str:
     """
@@ -9,8 +9,7 @@ def raw_search_query(song_path: str, tags_to_include: List[str] = None) -> str:
 
     Args:
         song_path: Path to the audio file.
-        tags_to_include: Default ['title', 'album'] for search.
-            Additional options - 'artist', 'albumartist'.
+        tags_to_include: Default ['title', 'artist', 'album'] for accuracy.
 
     Returns:
         Formatted search query string.
@@ -36,4 +35,4 @@ def raw_search_query(song_path: str, tags_to_include: List[str] = None) -> str:
     # print(raw_query)
     return raw_query
 
-raw_search_query(song_path="C:\\Users\\Max\\Desktop\\music\\Various Interprets - Ha Raham (Mehfuz).flac", tags_to_include=['albUm', 'albumArtIst', 'Title', 'arTist'])
+# raw_search_query(song_path="C:\\Users\\Max\\Desktop\\music\\Various Interprets - Ha Raham (Mehfuz).flac", tags_to_include=['albUm', 'albumArtIst', 'Title', 'arTist'])

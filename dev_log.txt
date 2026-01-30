@@ -1,1 +1,6 @@
 currently working on main.py
+
+work need on:
+
+fetch - 
+extract_save -
