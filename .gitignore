@@ -1,3 +1,4 @@
+.env
 .venv/
 utils/__pycache__/
 lyrics/

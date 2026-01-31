@@ -6,10 +6,16 @@ def synced(json_data:list[dict]) -> str|bool:
     Returns:
         synced lyrics(str) if found, otherwise False
     """
+    if not isinstance(json_data, list):
+        return False
+
     for item in json_data:
         synced_lyrics = item.get("syncedLyrics")
-        if  synced_lyrics is not None:
+        if  synced_lyrics == None:
+            pass
+        else:
             return synced_lyrics
+
     return False
 
 def unsynced(json_data:list[dict]) -> str|bool:
@@ -17,9 +23,14 @@ def unsynced(json_data:list[dict]) -> str|bool:
     Returns:
         unsynced lyrics(str) if found, otherwise False
     """
+    if not isinstance(json_data, list):
+        return False
+
     for item in json_data:
         unsynced_lyrics = item.get("plainLyrics")
-        if  unsynced_lyrics is not None:
+        if  unsynced_lyrics == None:
+            pass
+        else:
             return unsynced_lyrics
     return False
 
@@ -42,6 +53,9 @@ def lyrics(json_data: list[dict], out_dir: str, out_filename:str, mode: int = 2)
     Returns:
         0
     """
+
+    if not json_data:
+        return False
 
     match mode:
         case 0: # synced only

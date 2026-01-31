@@ -11,24 +11,11 @@ def search_query(query:str) -> str:
         a clean search query (string)
     """
 
-    # 0. Replace -,_ with space
-    cleaned_query = re.sub(r"[-_]", " ", query)
+    # 1. Replace -, _, and . with space
+    cleaned_query = re.sub(r"[-_.]", " ", query)
 
-    # 1. Remove all ambiguous symbols
+    # 2. Remove all ambiguous symbols
     cleaned_query = re.sub(r"[^a-zA-Z0-9 ]+", "", cleaned_query)
-    
-    # 2. Keep only the first occurrence of each word
-    words = cleaned_query.split(" ")
-    seen = set()
-    unique_words = []
-
-    for word in words:
-        lower_word = word.lower()  # optional: treat 'Life' and 'life' as duplicates
-        if lower_word not in seen:
-            seen.add(lower_word)
-            unique_words.append(word)
-
-    cleaned_query = " ".join(unique_words)
 
     # 3. Replace multiple consecutive spaces with a single space
     cleaned_query = re.sub(r"\s+", " ", cleaned_query).strip()
