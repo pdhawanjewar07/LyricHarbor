@@ -1,23 +1,26 @@
 # time-synced-lyrics
-a command line tool written in python to fetch time synced lyrics from multiple sources for given flac songs in a directory.
-
-use MP3TAG (https://www.mp3tag.de/) to embed lyrics to songs
+fetch lyrics from musixmatch-via-spotify, lrclib, genius. 
 
 ## Steps to follow -
 1. **setup a virtual environment**
-```bash
+```pwsh
 python -m venv .venv
 ```
 
-```bash
-source .venv/Scripts/activate
+```pwsh
+.venv\Scripts\activate.ps1
 ```
 
 2. **install required packages**
-``` bash
+``` pwsh
 pip install -r requirements.txt
 ```
 
-3. **select music directory**
+3. **set preferences in config**
 
-4. **run all cells**
+4. **save your tokens in .env**
+
+5. **run main.py**
+
+### Notes -
+1. use MP3TAG (https://www.mp3tag.de/) to embed lyrics to songs
