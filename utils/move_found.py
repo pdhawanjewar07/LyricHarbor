@@ -23,6 +23,6 @@ def move_flac_lrc_pairs(src_dir: str, dst_dir: str) -> None:
 
 if __name__ == "__main__":
     SOURCE_DIR = r"C:\\Users\\Max\\Desktop\\music"
-    DEST_DIR = r"C:\\Users\\Max\\Desktop\\music\\musixmatch_found"
+    DEST_DIR = r"C:\\Users\\Max\\Desktop\\music\\found"
 
     move_flac_lrc_pairs(SOURCE_DIR, DEST_DIR)

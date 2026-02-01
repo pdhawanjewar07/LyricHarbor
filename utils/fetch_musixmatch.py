@@ -1,44 +1,21 @@
 import requests
-from utils.config import CHROME_BINARY, DRIVER_PATH, TRACK_CSS_SELECTOR, SPOTIFY_DC_TOKEN
+from utils.config import SPOTIFY_TRACK_CSS_SELECTOR
 from utils.helpers import extract_spotify_lyrics
 import re
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from syrics.api import Spotify
+from utils.selenium_startup import get_driver
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+SPOTIFY_DC_TOKEN = os.getenv("SPOTIFY_DC_TOKEN")
 
 sp = Spotify(SPOTIFY_DC_TOKEN)
 
-# Set Chrome options
-chrome_options = webdriver.ChromeOptions()
-chrome_options.binary_location = CHROME_BINARY
-# REQUIRED (new headless, not the legacy garbage)
-chrome_options.add_argument("--headless=new")
-# Performance
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
-# Stability for SPAs
-chrome_options.add_argument("--window-size=1920,1080")
-chrome_options.add_argument("--disable-background-timer-throttling")
-chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-chrome_options.add_argument("--disable-renderer-backgrounding")
-# Anti-flake
-chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-# Optional but recommended (Spotify sometimes behaves differently)
-chrome_options.add_argument(
-    "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/120.0.0.0 Safari/537.36"
-)
-
-chrome_service = Service(executable_path=DRIVER_PATH)
-driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
-print("----Chrome driver was started----")
-
+driver = get_driver()
 
 def lyrics_musixmatch_via_spotify(search_query: str, mode:int) -> str|bool:
     """
@@ -52,9 +29,13 @@ def lyrics_musixmatch_via_spotify(search_query: str, mode:int) -> str|bool:
         Lyrics(str) if found, otherwise False
     """
     url = f"https://open.spotify.com/search/{requests.utils.quote(search_query)}/tracks"
-    driver.get(url)
 
-    first_track = WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, TRACK_CSS_SELECTOR)))
+    try:
+        driver.get(url)
+        first_track = WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, SPOTIFY_TRACK_CSS_SELECTOR)))
+    except: 
+        # print("Lyrics not found - MusixMatch")
+        return False
 
     old_url = driver.current_url
     first_track.click()

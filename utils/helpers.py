@@ -1,6 +1,8 @@
 import time
 import random
 
+
+
 def human_delay(mean: float = 5.0, jitter: float = 0.3, minimum: float = 3.0):
     delay = random.gauss(mean, mean * jitter)
     time.sleep(max(minimum, delay))
@@ -11,6 +13,30 @@ def save_lyrics(lyrics:str, out_dir: str, out_filename:str) -> bool:
         f.write(lyrics)
     return True
 
+def extract_genius_song_url(json_data: dict) -> str|bool:
+    """
+    extract genius unsynced lyrics from json response
+    
+    Args:
+        json_data: json response from genius fetch
+
+    Returns:
+        lyrics(str) if found, otherwise False
+    """
+    if json_data is None:
+        return False
+    
+    try:
+        response = json_data.get("response", {})
+        hits = response.get("hits", [])
+        song_obj = hits[0] # best match(first)
+        result = song_obj.get("result", {})
+        genius_song_url = result.get("relationships_index_url", "")
+        # print(genius_song_url)
+        return genius_song_url
+    except:
+        return False
+    
 def extract_spotify_lyrics(json_data: dict, mode:int=2) -> str|bool:
     """
     extract spotify lyrics from json response

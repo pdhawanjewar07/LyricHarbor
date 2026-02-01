@@ -9,7 +9,7 @@ def raw_search_query(song_path: str, source:int) -> str:
 
     Args:
         song_path: Path to the audio file.
-        source: lyrics provider[musixmatch-via-spotify(0), lrclib(1)]
+        source: lyrics provider[musixmatch-via-spotify(0), lrclib(1), genius(2)]
 
     Returns:
         Raw search query(str).
@@ -21,6 +21,8 @@ def raw_search_query(song_path: str, source:int) -> str:
             tags_to_include = ['title', 'artist', 'album']
         case 1: # lrclib
             tags_to_include = ['title', 'artist', 'album']
+        case 2: # genius
+            tags_to_include = ['title', 'albumartist']
         case _: # default
             tags_to_include = ['title', 'artist', 'album']
 
