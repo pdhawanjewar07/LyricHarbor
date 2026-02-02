@@ -1,11 +1,11 @@
 import requests
-from utils.config import SPOTIFY_TRACK_CSS_SELECTOR
-from utils.helpers import extract_spotify_lyrics, build_search_query
 import re
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from syrics.api import Spotify
+from utils.config import SPOTIFY_TRACK_CSS_SELECTOR
+from utils.helpers import extract_spotify_lyrics, build_search_query
 from utils.selenium_startup import get_driver
 from dotenv import load_dotenv
 import os
@@ -62,3 +62,6 @@ def fetch_lyrics(song_path: str, mode:int) -> str|bool:
     log.info("FAILURE - MusixMatch: lyrics not found")
     return False
 
+if __name__ == "__main__":
+    lyrics = fetch_lyrics(song_path="C:\\Users\\Max\\Desktop\\music\\small\\Outstation - Tum Se.flac", mode=0)
+    # print(lyrics)

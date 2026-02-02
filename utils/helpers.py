@@ -135,7 +135,7 @@ def extract_spotify_lyrics(json_data: dict, mode:int=2) -> str|bool:
         return f"{minutes:02d}:{seconds:05.2f}"
 
     def synced(mode:int):
-        if syncType == "LINE_SYNCED" and mode==0|2: # SYNCED
+        if syncType == "LINE_SYNCED" and mode in (0, 2): # SYNCED
             for entry in lines_data:
                 words = entry.get("words", "").strip()
                 if not words: continue
