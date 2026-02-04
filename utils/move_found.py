@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
-from config import AUDIO_EXTENSIONS
+
+AUDIO_EXTENSIONS = {".mp3", ".flac", ".wav", ".aac", ".m4a",".ogg", ".opus", ".alac", ".aiff"}
 
 def move_audio_lrc_pairs(src_dir: str, dst_dir: str) -> bool:
     src = Path(src_dir)

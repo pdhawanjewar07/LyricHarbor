@@ -56,7 +56,7 @@ if __name__ == "__main__":
         print(f"{i+1}. {song}")
         lyrics = fetch_lyrics(song_path=song, fetch_mode=2)
         if lyrics is not False:
-            with open(f"_lyrics/{i+1}.lrc", "w", encoding="utf-8") as f:
+            with open(f"lyrics/{i+1}.lrc", "w", encoding="utf-8") as f:
                 f.write(song + "\n\n" + lyrics)
 
 

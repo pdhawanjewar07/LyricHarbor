@@ -7,9 +7,8 @@ Currently working on -
 
 To work on -
 🔴 apply best coding practices, normalize and optimize the codebase
+🔴 remove dependency on syrics, grab lyrics network request from spotify network request
 🔴 add option to auto embed lyrics to tracks 
-🔴 deep search, if required 
-🔴 if lyris are already embedded, skip the song
 🔴 add source: lyricsfind-via-ytmusic/google
 🔴 switch to official spotify api when developer dashboard app creation becomes available
 
@@ -20,3 +19,4 @@ Finished working on -
 🟢 best lyrics item match - reject if title, artist, album doesn't match
 🟢 lead lyrics by around 1 second
 🟢 cache unsynced lyrics if found to avoid double fetch
+🟢 maybe switch from selenium to playwright?

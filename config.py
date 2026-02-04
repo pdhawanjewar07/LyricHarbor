@@ -1,17 +1,12 @@
+# Lyrics providers available: musixmatch-via-spotify, lrclib
+
 # preferences
 LYRICS_FETCH_MODE = 2 # synced[0], unsynced[1], synced_with_fallback[2] (Default:2)
-# LYRICS_SOURCES = ["musixmatch-via-spotify", "lrclib"] # "lyricsfind-via-ytmusic"(fixed priority in fetch.from_all)
-AUDIO_EXTENSIONS = {".mp3", ".flac", ".wav", ".aac", ".m4a",".ogg", ".opus", ".alac", ".aiff"}
 
 # music paths
-MUSIC_DIRECTORY = "C:/Users/Max/Desktop/music" # non recursive musixmatch_found
+MUSIC_DIRECTORY = "C:/Users/Max/Desktop/music" # shallow search
 OUTPUT_DIRECTORY = "C:/Users/Max/Desktop/music" # output directory for song_name.lrc
 
-# chrome & driver paths
-# C:/Users/Max/Desktop/VS-Code/Github Repositories/time-synced-lyrics/bin/chromedriver-win64/chromedriver.exe
-DRIVER_PATH = "bin/chromedriver-win64/chromedriver.exe"  # must match chrome version
-CHROME_BINARY = r"bin/chrome-win64/chrome.exe"
-
-# selenium element identifiers
+# Element identifiers
 SPOTIFY_TRACK_CSS_SELECTOR = "#searchPage > div > div > div > div.eaxF79s4oV8I2CPQ > div > div.m9t_KhZ6MI0XQj9b > div:nth-child(2) > div:nth-child(1) > div > div.NILrlF6tOUcbSyzo > div > a > div"
-GENIUS_LYRICS_ELEMENT_XPATH = '//*[@id="lyrics-root"]/div[1]'
+# GENIUS_LYRICS_ELEMENT_XPATH = '//*[@id="lyrics-root"]/div[1]'

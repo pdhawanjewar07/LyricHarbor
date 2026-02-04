@@ -16,6 +16,14 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 log.info("==== New log session was started ====")
 
+def format_time(seconds: float) -> str:
+    ms = int((seconds % 1) * 1000)
+    secs = int(seconds) % 60
+    mins = (int(seconds) // 60) % 60
+    hrs = int(seconds) // 3600
+    # 23hrs:12min:59sec,213ms
+    return f"{hrs:02}hrs:{mins:02}min:{secs:02}sec,{ms:03}ms"
+
 def clean_string(raw_string:str) -> str:
     """
     regex clean given string
@@ -27,9 +35,11 @@ def clean_string(raw_string:str) -> str:
     
     """
     clean_string = raw_string.lower()                         # to lowercase
-    clean_string = re.sub(r"\s*\([^)]*\)", "", clean_string)  # remove anything inside brackets with themselves
-    clean_string = re.sub(r"[^a-z0-9\s]", " ", clean_string)  # remove punctuation
+    # clean_string = re.sub(r"\s*\([^)]*\)", "", clean_string)  # remove anything inside brackets with themselves
+    clean_string = re.sub(r"[^\w\s÷]", " ", clean_string, flags=re.UNICODE)  # remove punctuation, keep unicode,÷(for other languages)
+    clean_string = clean_string.replace("_", " ") # unicode flag ignores "_"
     clean_string = re.sub(r"\s*Various Interprets", "", clean_string, flags=re.IGNORECASE)  # remove "Various Interprets"
+    clean_string = re.sub(r"\s*Various Artists", "", clean_string, flags=re.IGNORECASE)  # remove "Various Interprets"
     clean_string = re.sub(r"\s+", " ", clean_string).strip()  # clean excess whitespace
     return clean_string
 
@@ -157,8 +167,8 @@ def extract_spotify_lyrics(json_data: dict) -> tuple:
     syncType = lyrics.get("syncType", "")
     lines_data = lyrics.get("lines", [])
     lyrics_data = {
-        "synced_lyrics": "",
-        "unsynced_lyrics": ""
+        "synced_lyrics": False,
+        "unsynced_lyrics": False
     }
     
     def ms_to_timestamp(ms: int) -> str:
@@ -168,6 +178,7 @@ def extract_spotify_lyrics(json_data: dict) -> tuple:
 
     def synced()-> str|bool:
         if syncType == "LINE_SYNCED":
+            lyrics_data["synced_lyrics"] = ""
             for entry in lines_data:
                 words = entry.get("words", "").strip()
                 start_ms = int(entry["startTimeMs"])
@@ -177,7 +188,8 @@ def extract_spotify_lyrics(json_data: dict) -> tuple:
         return False
 
     def unsynced()-> str|bool:
-        if syncType in ["LINE_SYNCED", "UNSYNCED"]:
+        if syncType in ["UNSYNCED", "LINE_SYNCED"]: # to extract unynced lyrics from synced too..
+            lyrics_data["unsynced_lyrics"] = ""
             for entry in lines_data:
                 words = entry.get("words", "").strip()
                 lyrics_data["unsynced_lyrics"] += f"\n{words}"

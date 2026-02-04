@@ -5,9 +5,9 @@ __pycache__/
 utils/__pycache__/
 utils/fetch/__pycache__/
 
-bin/
-archive/
-_lyrics/
+playwright_profile/
+lyrics/
+
 
 main.log
 test.py

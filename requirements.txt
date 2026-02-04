@@ -2,8 +2,4 @@ mutagen
 requests
 urllib3
 syrics
-selenium
 python-dotenv
-
-# ipykernel
-# syncedlyrics

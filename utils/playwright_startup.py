@@ -1,0 +1,42 @@
+from playwright.sync_api import sync_playwright
+from pathlib import Path
+from typing import Optional, List
+
+class PlaywrightDriver:
+    def __init__(
+        self,
+        user_data_dir: str = "playwright_profile",
+        headless: bool = True,
+        args: Optional[List[str]] = None,
+        timeout_ms: int = 30_000,
+    ):
+        self._playwright = sync_playwright().start()
+
+        Path(user_data_dir).mkdir(parents=True, exist_ok=True)
+
+        chromium_args = args or [
+            "--disable-dev-shm-usage",
+            "--disable-background-networking",
+            "--disable-default-apps",
+            "--disable-sync",
+            "--disable-extensions",
+            "--disable-component-update",
+            "--disable-features=TranslateUI",
+        ]
+
+        self._context = self._playwright.chromium.launch_persistent_context(
+            user_data_dir=user_data_dir,
+            headless=headless,
+            args=chromium_args,
+        )
+
+        self.page = self._context.pages[0]
+        self.page.set_default_timeout(timeout_ms)
+        self.page.set_default_navigation_timeout(timeout_ms)
+
+    def get(self, url: str):
+        self.page.goto(url)
+
+    def close(self):
+        self._context.close()
+        self._playwright.stop()
