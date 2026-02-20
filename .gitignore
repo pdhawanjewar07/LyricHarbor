@@ -7,10 +7,10 @@ utils/fetch/__pycache__/
 
 playwright_profile/
 lyrics/
-backup/
+# backup/
 
 dev.log
 main.log
-test.py
-test1.py
+# test.py
+# test1.py
 lyricfind.json
