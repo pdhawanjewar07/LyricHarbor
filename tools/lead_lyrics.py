@@ -37,7 +37,7 @@ def shift_lrc_timestamps(src_dir: str,dst_dir: str,offset_seconds: float) -> boo
 
 # you can replace original .lrc files by making 'DEST_DIR = SOURCE_DIR'
 if __name__ == "__main__":
-    SOURCE_DIR = r"C:\\Users\\Max\\Desktop\\music\\found"
-    DEST_DIR = r"C:\\Users\\Max\\Desktop\\music\\found"
+    SOURCE_DIR = r"C:\\Users\\Max\\Desktop\\music\\small"
+    DEST_DIR = r"C:\\Users\\Max\\Desktop\\music\\small"
     # offset = lyrics lead(-ve), lyrics lag(+ve)
     shift_lrc_timestamps(src_dir=SOURCE_DIR, dst_dir=DEST_DIR, offset_seconds=-0.25) # Recommended: -0.25

@@ -6,138 +6,153 @@ from utils.helpers import human_delay, extract_lrclib_lyrics, build_search_query
 import time
 import logging
 import json
+from typing import Tuple, Optional
 
 log = logging.getLogger(__name__)
 
 
-# General Variables Declaration
 UA_POOL = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
 ]
+
 BASE_HEADERS = {
-    "Accept": "application/json, text/plain, */*",
+    "Accept": "application/json",
     "Accept-Language": "en-US,en;q=0.9",
-    # kill keep-alive to avoid poisoned TLS sockets
     "Connection": "close",
 }
-_retry = Retry(
-    total=0,
-    backoff_factor=1.5,
-    status_forcelist=[500, 502, 503, 504],
-    allowed_methods=["GET"],
-    raise_on_status=False,
-)
 
-_adapter = HTTPAdapter(max_retries=_retry)
 
-# Session factory
-def new_session() -> requests.Session:
+LRCLIB_SEARCH_URL = "https://lrclib.net/api/search"
+SESSION_ROTATE_EVERY = 10
+MAX_SEARCH_ATTEMPTS = 3
+
+
+def _build_session() -> requests.Session:
+    retry = Retry(
+        total=3,
+        connect=3,
+        read=3,
+        backoff_factor=1.2,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods={"GET"},
+        raise_on_status=False,
+    )
+
+    adapter = HTTPAdapter(max_retries=retry)
+
     s = requests.Session()
-    s.mount("https://", _adapter)
-    headers = BASE_HEADERS.copy()
-    headers["User-Agent"] = random.choice(UA_POOL)
-    s.headers.update(headers)
+    s.mount("https://", adapter)
+    s.headers.update(BASE_HEADERS)
+    s.headers["User-Agent"] = random.choice(UA_POOL)
     return s
 
-# Global session (rotated)
-_session = new_session()
+
+_session: requests.Session = _build_session()
 _request_count = 0
-SESSION_ROTATE_EVERY = 7
 
-def fetch_lyrics(song_path: str) -> tuple:
-    """
-    Fetch lyrics from lrclib
-    
-    :param song_path: song path
-    :type song_path: str
-    :return: (synced_lyrics, unsynced_lyrics) items can be str|False
-    :rtype: tuple
 
-    """
+def _rotate_session(force: bool = False) -> False:
     global _session, _request_count
+    if force or _request_count >= SESSION_ROTATE_EVERY:
+        try:
+            _session.close()
+        finally:
+            _session = _build_session()
+            _request_count = 0
 
-    cache = {
-        "synced_lyrics":False,
-        "synced_description":False,
-        "unsynced_lyrics":False,
-        "unsynced_description":False
-    }
 
-    # rotate session periodically
+def _safe_get(params: dict) -> Optional[list]:
+    global _request_count
     _request_count += 1
-    if _request_count % SESSION_ROTATE_EVERY == 0:
-        try:
-            _session.close()
-        finally:
-            _session = new_session()
-
-    """
-    sleep_duration = human_delay()
-    log.info(f"WAITING - {sleep_duration:0.2f}s before next lrclib request")
-    time.sleep(sleep_duration)
-    """
-
-    search_query = build_search_query(song_path=song_path)
 
     try:
-        response = _session.get(
-            "https://lrclib.net/api/search",
-            params={
-                "q": search_query,
-                "limit": random.choice([10, 15, 20]),
-            },
-            timeout=(3, 10),
-            allow_redirects=True,
+        r = _session.get(
+            LRCLIB_SEARCH_URL,
+            params=params,
+            timeout=(4, 12),
         )
-
     except requests.exceptions.SSLError:
-        # poisoned TLS session → hard reset
-        try:
-            _session.close()
-        finally:
-            _session = new_session()
-        return (False, False)
-
+        _rotate_session(force=True)
+        return False
     except requests.exceptions.RequestException:
-        return (False, False)
+        return False
 
-    # explicit rate-limit handling
-    if response.status_code == 429:
-        time.sleep(random.uniform(60, 120))
-        return (False, False)
+    if r.status_code == 429:
+        time.sleep(random.uniform(30, 60))
+        return False
 
-    if response.status_code != 200:
-        return (False, False)
-
-    try: json_response = response.json()
-    except ValueError: return (False, False)
-    # print(json_response)
-    # with open(f"_lyrics/1.json", "w", encoding="utf-8") as f:
-    #     json.dump(json_response, f, ensure_ascii=False, indent=2)
-    
-    lyrics = extract_lrclib_lyrics(json_data=json_response)  # tuple is returned
-    # print(lyrics)
-
-    cache["synced_lyrics"], cache["synced_description"], cache["unsynced_lyrics"], cache["unsynced_description"] = lyrics
+    if r.status_code != 200:
+        return False
 
     try:
-        sync_flag = match_song_metadata(print_match=False, threshold=60, local_song_path=song_path, received_song_info=cache["synced_description"])
-        unsync_flag = match_song_metadata(print_match=False, threshold=60, local_song_path=song_path, received_song_info=cache["unsynced_description"])
-        if sync_flag is False: cache["synced_lyrics"] = False
-        if unsync_flag is False: cache["unsynced_lyrics"] = False
-    except:
-        # log.info("FAILURE - LrcLib sync_flag: incorrect match")
-        # log.info("FAILURE - LrcLib unsync_flag: incorrect match")
-        pass
+        return r.json()
+    except ValueError:
+        return False
 
-    return (cache["synced_lyrics"], cache["unsynced_lyrics"])
+
+def fetch_lyrics(song_path: str) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Returns (synced_lyrics, unsynced_lyrics)
+    """
+
+    synced = False
+    unsynced = False
+
+    search_queries = build_search_query(song_path)
+    if isinstance(search_queries, str):
+        search_queries = [search_queries]
+
+    for attempt in range(MAX_SEARCH_ATTEMPTS):
+        for query in search_queries:
+            json_data = _safe_get(
+                {
+                    "q": query,
+                    "limit": 20,
+                }
+            )
+
+            if not json_data:
+                continue
+
+            (
+                synced_lrc,
+                synced_desc,
+                unsynced_lrc,
+                unsynced_desc,
+            ) = extract_lrclib_lyrics(json_data=json_data)
+
+            try:
+                if synced_lrc and synced_desc:
+                    if match_song_metadata(
+                        local_song_path=song_path,
+                        received_song_info=synced_desc,
+                        threshold=65,
+                        print_match=False,
+                    ):
+                        synced = synced_lrc
+
+                if unsynced_lrc and unsynced_desc:
+                    if match_song_metadata(
+                        local_song_path=song_path,
+                        received_song_info=unsynced_desc,
+                        threshold=65,
+                        print_match=False,
+                    ):
+                        unsynced = unsynced_lrc
+            except Exception:
+                pass
+
+            if synced or unsynced:
+                return synced, unsynced
+
+        time.sleep(random.uniform(0.8, 1.5))
+        _rotate_session()
+
+    return False, False
+
 
 
 if __name__ == "__main__":
