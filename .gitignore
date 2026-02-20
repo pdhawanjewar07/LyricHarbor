@@ -9,7 +9,7 @@ playwright_profile/
 lyrics/
 # backup/
 
-dev.log
+# dev.log
 main.log
 # test.py
 # test1.py
