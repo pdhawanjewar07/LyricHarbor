@@ -3,17 +3,12 @@ from syrics.api import Spotify
 import json
 from dotenv import load_dotenv
 import os
-# from utils.totp import TOTP
 
 load_dotenv()
 
 sp_dc = os.getenv("SP_DC_TOKEN")
 
-
-
-TRACK_ID = "0dfDtMJigXYVWoqNovKPA3" 
-# SP_DC = "your_sp_dc_cookie_here"
-OUTPUT_FILE = "synced_lyrics.json"
+TRACK_ID = "1DwscornXpj8fmOmYVlqZt" 
 
 def save_synced_lyrics(track_id):
     sp = Spotify(sp_dc)
@@ -26,7 +21,7 @@ def save_synced_lyrics(track_id):
 
     synced_lines = lyrics_data["lyrics"]["lines"]
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    with open("lyrics/syrics.json", "w", encoding="utf-8") as f:
         json.dump(synced_lines, f, indent=4, ensure_ascii=False)
 
     print("Saved synced lyrics.")

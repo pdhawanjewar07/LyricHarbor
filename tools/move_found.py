@@ -25,7 +25,7 @@ def move_audio_lrc_pairs(src_dir: str, dst_dir: str) -> bool:
 
 
 if __name__ == "__main__":
-    SOURCE_DIR = r"C:\\Users\\Max\\Desktop\\music"
-    DEST_DIR = r"C:\\Users\\Max\\Desktop\\music\\found"
+    SOURCE_DIR = r"C:\\Users\\Max\\Desktop\\music\\small"
+    DEST_DIR = r"C:\\Users\\Max\\Desktop\\music\\small\\found"
 
     move_audio_lrc_pairs(SOURCE_DIR, DEST_DIR)

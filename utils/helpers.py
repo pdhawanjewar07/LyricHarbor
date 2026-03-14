@@ -48,7 +48,8 @@ def clean_string(raw_string:str) -> str:
     
     """
     clean_string = raw_string.lower()                         # to lowercase
-    clean_string = re.sub(r"\s*\([^)]*\)", "", clean_string)  # remove anything inside brackets with themselves
+    clean_string.replace("(", " ").replace(")", " ")
+    # clean_string = re.sub(r"\s*\([^)]*\)", "", clean_string)  # remove anything inside brackets with themselves
     clean_string = re.sub(r"[^\w\s÷]", " ", clean_string, flags=re.UNICODE)  # remove punctuation, keep unicode,÷(for other languages)
     clean_string = clean_string.replace("_", " ") # unicode flag ignores "_"
     clean_string = re.sub(r"\s*Various Interprets", "", clean_string, flags=re.IGNORECASE)  # remove "Various Interprets"

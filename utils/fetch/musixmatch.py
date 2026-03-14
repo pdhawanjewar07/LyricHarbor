@@ -1,20 +1,24 @@
-from utils.helpers import extract_spotify_lyrics, build_search_query, match_song_metadata, get_songs, clear_profile_cache
+from utils.helpers import extract_spotify_lyrics, build_search_query, match_song_metadata, get_songs
 import logging
 from bs4 import BeautifulSoup
 from config import SPOTIFY_TRACK_CSS_SELECTOR
 import requests
 from utils.playwright_driver import PlaywrightDriver
 import re
-import json
+# import json
 import time
-from utils.spotify_auth import SpotifyAuthManager
+from dotenv import load_dotenv
+import os
+# from utils.spotify_auth import SpotifyAuthManager
 
-total_wasted_time = {"total_wasted_time": 0}
+load_dotenv()
+
+SPOTIFY_AUTH_TOKEN = os.getenv("SPOTIFY_AUTH_TOKEN")
 
 log = logging.getLogger(__name__)
 
-auth = SpotifyAuthManager()
-driver = PlaywrightDriver(headless=True)  # False for debugging
+# auth = SpotifyAuthManager()
+DRIVER = PlaywrightDriver(headless=False)  # False for debugging
 
 def fetch_lyrics(song_path: str) -> tuple:
     """
@@ -40,12 +44,12 @@ def fetch_lyrics(song_path: str) -> tuple:
     wasted_time_start = time.time()
     # ---------------------------------------
 
-    driver.page.goto(search_url)
-    driver.page.wait_for_selector(SPOTIFY_TRACK_CSS_SELECTOR)
-    driver.page.click(SPOTIFY_TRACK_CSS_SELECTOR)
-    driver.page.wait_for_url("**/track/**")
+    DRIVER.page.goto(search_url)
+    DRIVER.page.wait_for_selector(SPOTIFY_TRACK_CSS_SELECTOR)
+    DRIVER.page.click(SPOTIFY_TRACK_CSS_SELECTOR)
+    DRIVER.page.wait_for_url("**/track/**")
 
-    spotify_track_url = driver.page.url
+    spotify_track_url = DRIVER.page.url
     # print(f"Spotify _track url: {spotify_track_url}")
 
     #/start For track comparison 
@@ -75,15 +79,12 @@ def fetch_lyrics(song_path: str) -> tuple:
     match = re.search(r"/track/([A-Za-z0-9]+)", spotify_track_url)
     spotify_track_id = match.group(1)
     # print(f"Spotify track id: {spotify_track_id}")
-
-    # ---------------------------------------
-    elapsed_wasted_time = time.time() - wasted_time_start
-    total_wasted_time["total_wasted_time"] += elapsed_wasted_time
     # ---------------------------------------
 
     lyrics_url = f"https://spclient.wg.spotify.com/color-lyrics/v2/track/{spotify_track_id}/image/https%3A%2F%2Fi.scdn.co%2Fimage%2F{encoded_img_id}?format=json&vocalRemoval=false&market=from_token"
     
-    spotify_auth_token = auth.get_token()
+    # spotify_auth_token = auth.get_token()
+    spotify_auth_token = SPOTIFY_AUTH_TOKEN
     spotify_auth = f"Bearer {spotify_auth_token}"
     headers = {
         "Authorization": spotify_auth,

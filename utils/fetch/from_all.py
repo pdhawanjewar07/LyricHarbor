@@ -15,6 +15,7 @@ SOURCE_FETCHERS = {
 }
 
 
+
 def fetch_lyrics(song_path:str, fetch_mode:int) -> str|bool:
     """fetch lyrics from all sources
 
